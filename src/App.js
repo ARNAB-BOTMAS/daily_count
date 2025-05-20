@@ -326,7 +326,34 @@ useEffect(() => {
                     <td>{item.da_count}</td>
                   </tr>
                 ))}
+
+                {/* Total Row */}
+                <tr>
+                  <td style={{
+                    background : "#28b463",
+                    color : "#fff"
+                  }}><strong>Total</strong></td>
+                  <td style={{ background : "#aed6f1"}}><strong>{data.reduce((sum, item) => sum + item.tf_count, 0)}</strong></td>
+                  <td style={{ background : "#aed6f1"}}><strong>{data.reduce((sum, item) => sum + item.da_count, 0)}</strong></td>
+                </tr>
+
+                {/* Grand Total Row */}
+                <tr>
+                  <td colSpan="2" style={{
+                    background : "#e74c3c",
+                    color : "#fff"
+                  }}><strong>Grand Total (TF + DA)</strong></td>
+                  <td colSpan="2" style={{
+                    background : "#0e6655",
+                    color : "#fff"
+                  }}>
+                    <strong>
+                      {data.reduce((sum, item) => sum + item.tf_count + item.da_count, 0)}
+                    </strong>
+                  </td>
+                </tr>
               </tbody>
+
             </table>
           </div>
         </div>
