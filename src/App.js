@@ -24,20 +24,20 @@ function App() {
   const [showAll, setShowAll] = useState(false);
   const [showLoadingText, setShowLoadingText] = useState(false);
 
-useEffect(()=> {
-  const timer = setTimeout(() => {
-      setShowLoadingText(true); // hide text only
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowLoadingText(true);
     }, 2000);
 
     return () => clearTimeout(timer);
-})
+  }, []);
 
-useEffect(() => {
+  useEffect(() => {
     axios
       .get(`${API_URL}`, {
         headers: { 'x-api-key': API_KEY },
       })
-      .then((res) => {
+      .then(() => {
         setLoading(false);
       })
       .catch((err) => {
@@ -222,6 +222,24 @@ useEffect(() => {
     });
   };
 
+  const tileClassName = ({ date, view }) => {
+    if (view === 'month') {
+      const formatted = format(date, 'dd/MM/yyyy');
+      const today = new Date();
+      const isToday = formatted === format(today, 'dd/MM/yyyy');
+      const isSelected = formatted === format(selectedDate, 'dd/MM/yyyy');
+      const isPastOrToday = date <= today;
+
+      if (isSelected) return 'selected-tile';
+      if (!isPastOrToday) return null;
+
+      const isFilled = data.some((entry) => entry.date === formatted);
+      if (isToday) return 'today-tile';
+      return isFilled ? 'filled-tile' : 'empty-tile';
+    }
+    return null;
+  };
+
   if (loading) {
     return (
       <div className="splash-screen">
@@ -230,7 +248,7 @@ useEffect(() => {
           loop={true}
           style={{ height: '50%', width: '50%' }}
         />
-        {showLoadingText && <h1>Loading....</h1>}
+        {(() => showLoadingText ? <h1>Loading....</h1> : <h1>Welcome</h1>)()}
       </div>
     );
   }
@@ -239,7 +257,11 @@ useEffect(() => {
     <div className="App">
       <h1>Daily Count</h1>
 
-      <Calendar onChange={setSelectedDate} value={selectedDate} />
+      <Calendar
+        onChange={setSelectedDate}
+        value={selectedDate}
+        tileClassName={tileClassName}
+      />
 
       <h2>Entry for {format(selectedDate, 'dd/MM/yyyy')}</h2>
       {selectedData ? (
@@ -307,10 +329,18 @@ useEffect(() => {
       </button>
 
       {showAll && (
-        <div id='tabledate'>
+        <div id="tabledate">
           <div>
             <h2 style={{ textAlign: 'center' }}>All Entries</h2>
-            <table border="1" cellPadding= "5" style={{ margin: '0 auto', borderCollapse: 'collapse', background: "#fff"}}>
+            <table
+              border="1"
+              cellPadding="5"
+              style={{
+                margin: '0 auto',
+                borderCollapse: 'collapse',
+                background: '#fff',
+              }}
+            >
               <thead>
                 <tr>
                   <th>Date</th>
@@ -326,34 +356,35 @@ useEffect(() => {
                     <td>{item.da_count}</td>
                   </tr>
                 ))}
-
-                {/* Total Row */}
                 <tr>
-                  <td style={{
-                    background : "#28b463",
-                    color : "#fff"
-                  }}><strong>Total</strong></td>
-                  <td style={{ background : "#aed6f1"}}><strong>{data.reduce((sum, item) => sum + item.tf_count, 0)}</strong></td>
-                  <td style={{ background : "#aed6f1"}}><strong>{data.reduce((sum, item) => sum + item.da_count, 0)}</strong></td>
-                </tr>
-
-                {/* Grand Total Row */}
-                <tr>
-                  <td colSpan="2" style={{
-                    background : "#e74c3c",
-                    color : "#fff"
-                  }}><strong>Grand Total (TF + DA)</strong></td>
-                  <td colSpan="2" style={{
-                    background : "#0e6655",
-                    color : "#fff"
-                  }}>
+                  <td style={{ background: '#28b463', color: '#fff' }}>
+                    <strong>Total</strong>
+                  </td>
+                  <td style={{ background: '#aed6f1' }}>
                     <strong>
-                      {data.reduce((sum, item) => sum + item.tf_count + item.da_count, 0)}
+                      {data.reduce((sum, item) => sum + item.tf_count, 0)}
+                    </strong>
+                  </td>
+                  <td style={{ background: '#aed6f1' }}>
+                    <strong>
+                      {data.reduce((sum, item) => sum + item.da_count, 0)}
+                    </strong>
+                  </td>
+                </tr>
+                <tr>
+                  <td colSpan="2" style={{ background: '#e74c3c', color: '#fff' }}>
+                    <strong>Grand Total (TF + DA)</strong>
+                  </td>
+                  <td colSpan="2" style={{ background: '#0e6655', color: '#fff' }}>
+                    <strong>
+                      {data.reduce(
+                        (sum, item) => sum + item.tf_count + item.da_count,
+                        0
+                      )}
                     </strong>
                   </td>
                 </tr>
               </tbody>
-
             </table>
           </div>
         </div>

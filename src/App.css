@@ -48,7 +48,7 @@ ul {
 
 .react-calendar__tile {
   font-size: 12px;
-  padding: 5px !important; /* Optional: tighter spacing */
+  padding: 12px !important; /* Optional: tighter spacing */
 }
 
 .react-calendar__month-view__weekdays {
@@ -90,3 +90,24 @@ ul {
   justify-content: center;
   align-items: center;
 }
+
+.filled-tile {
+  background-color: #2ecc71 !important; /* green */
+  color: white !important;
+}
+
+.empty-tile {
+  background-color: #e74c3c !important; /* red */
+  color: white !important;
+}
+
+.today-tile {
+  background-color: #3498db !important; /* blue */
+  color: white !important;
+}
+
+.selected-tile {
+  background-color: #3498db !important;
+  color: white !important;
+}
+
